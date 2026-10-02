@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+instance/*.db
+app/static/images/*
+!app/static/images/.gitkeep
+.env
+.vscode/

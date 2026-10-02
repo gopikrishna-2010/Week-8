@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-7"><div class="card shadow-sm"><div class="card-body p-4">
+<h1 class="h3">{{ user.username }}'s Profile</h1>
+<p class="text-secondary">{{ user.email }}</p>
+<p>Member since {{ user.member_since.strftime('%d %b %Y') }}</p>
+<form method="post">{{ form.hidden_tag() }}
+<div class="mb-3">{{ form.about_me.label(class="form-label") }}{{ form.about_me(class="form-control", rows="5") }}</div>
+{{ form.submit(class="btn btn-primary") }}</form>
+</div></div></div></div>
+{% endblock %}

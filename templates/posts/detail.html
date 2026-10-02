@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<article class="card shadow-sm mb-4">
+{% if post.image_filename %}<img src="{{ url_for('static', filename='images/' + post.image_filename) }}" class="card-img-top detail-image" alt="{{ post.title }}">{% endif %}
+<div class="card-body p-4">
+<div class="small text-secondary mb-2">{{ post.timestamp.strftime('%d %b %Y %H:%M') }} · {{ post.author.username }} · {{ post.category }}</div>
+<h1 class="display-6 fw-bold">{{ post.title }}</h1>
+{% if post.tags %}<p class="text-secondary">Tags: {{ post.tags }}</p>{% endif %}
+<div class="post-content">{{ post.content }}</div>
+{% if current_user.is_authenticated and (current_user.id == post.user_id or current_user.is_admin) %}
+<div class="mt-4 d-flex gap-2">
+<a class="btn btn-outline-primary" href="{{ url_for('posts.edit', post_id=post.id) }}">Edit</a>
+<form method="post" action="{{ url_for('posts.delete', post_id=post.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline-danger">Delete</button></form>
+</div>
+{% endif %}
+</div>
+</article>
+
+<section class="card shadow-sm"><div class="card-body">
+<h2 class="h4">Comments</h2>
+{% if current_user.is_authenticated %}
+<form method="post" action="{{ url_for('comments.create', post_id=post.id) }}" class="mb-4">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<textarea name="content" class="form-control mb-2" rows="3" placeholder="Write a comment..." required></textarea>
+<button class="btn btn-primary">Add Comment</button>
+</form>
+{% else %}<p class="text-secondary">Please <a href="{{ url_for('auth.login') }}">log in</a> to comment.</p>{% endif %}
+
+{% for comment in approved_comments %}
+<div class="border-bottom py-3">
+<strong>{{ comment.author.username }}</strong>
+<span class="text-secondary small">{{ comment.timestamp.strftime('%d %b %Y %H:%M') }}</span>
+<p class="mb-2">{{ comment.content }}</p>
+{% if current_user.is_authenticated and (current_user.is_admin or current_user.id == comment.user_id) %}
+<form method="post" action="{{ url_for('comments.delete', comment_id=comment.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<button class="btn btn-sm btn-outline-danger">Delete</button>
+</form>
+{% endif %}
+</div>
+{% else %}<p class="text-secondary">No approved comments yet.</p>{% endfor %}
+</div></section>
+{% endblock %}
